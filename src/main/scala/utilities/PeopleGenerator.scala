@@ -1,9 +1,7 @@
 package utilities
 
-import java.io.IOException
 import models.Person
 
-import scala.io.Source
 import scala.util.{Failure, Try}
 
 object PeopleGenerator {
@@ -38,9 +36,9 @@ object PeopleGenerator {
                      femalePercent: Int,
                      malePercent: Int): Try[LazyList[Person]] = {
 
-    for {lastNames <- readFile("/names/last_names.txt")
-         maleFirstNames <- readFile("/names/male_first_names.txt")
-         femaleFirstNames <- readFile("/names/female_first_names.txt")
+    for {lastNames <- FileReader.readFile("/names/last_names.txt")
+         maleFirstNames <- FileReader.readFile("/names/male_first_names.txt")
+         femaleFirstNames <- FileReader.readFile("/names/female_first_names.txt")
          people <- generatePeopleStream(
            lastNames,
            femaleFirstNames,
@@ -97,25 +95,5 @@ object PeopleGenerator {
     Try {
       generate(totalMales, totalFemales)
     }
-  }
-
-  /**
-   * Reader for txt files containing names
-   *
-   * @param resourceName the file name that is getting read
-   * @return Array of names
-   */
-  private def readFile(resourceName: String): Try[Array[String]] = {
-    val inputStream = Option(getClass.getResourceAsStream(resourceName))
-    inputStream.map { stream =>
-      Try {
-        val lines = Source.fromInputStream(stream).getLines.toArray
-        stream.close()
-        lines
-      }
-    }
-      .getOrElse {
-        Failure(new IOException(s"""Can't load resource "$resourceName""""))
-      }
   }
 }
