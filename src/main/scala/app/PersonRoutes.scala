@@ -38,6 +38,9 @@ class PersonRoutes(personController: ActorRef[PersonController.Command])(implici
   def deletePerson(name: String): Future[ActionPerformed] =
     personController.ask(DeletePerson(name, _))
 
+  def removeAllPeople(): Future[ActionPerformed] =
+    personController.ask(RemoveAllPeople)
+
   //#all-routes
   //#people-get-post
   //#people-get-delete
@@ -84,8 +87,13 @@ class PersonRoutes(personController: ActorRef[PersonController.Command])(implici
             complete((StatusCodes.Created, performed))
           }
         }
+      },
+      delete {
+        //#people-delete-logic
+        onSuccess(removeAllPeople()) { performed =>
+          complete((StatusCodes.OK, performed))
+        }
       }
-
     )
   }
 

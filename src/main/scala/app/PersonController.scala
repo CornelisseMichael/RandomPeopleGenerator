@@ -25,9 +25,12 @@ object PersonController {
 
   final case class DeletePerson(name: String, replyTo: ActorRef[ActionPerformed]) extends Command
 
+  final case class RemoveAllPeople(replyTo: ActorRef[ActionPerformed]) extends Command
+
   final case class GetPersonResponse(maybePerson: Option[Person])
 
   final case class ActionPerformed(description: String)
+
 
 
   def apply(): Behavior[Command] = controller(Set.empty)
@@ -51,5 +54,8 @@ object PersonController {
       case DeletePerson(name, replyTo) =>
         replyTo ! ActionPerformed(s"Person $name deleted.")
         controller(people.filterNot(_.firstname == name))
+      case RemoveAllPeople(replyTo) =>
+        replyTo ! ActionPerformed("All People removed!")
+        controller(Set.empty)
     }
 }
