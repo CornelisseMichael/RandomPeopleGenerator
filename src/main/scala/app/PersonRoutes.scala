@@ -33,7 +33,7 @@ class PersonRoutes(personController: ActorRef[PersonController.Command])(implici
 
   def generatePeople(totalPeople: GenerationOptions, femalePercent: GenerationOptions,
                      malePercent: GenerationOptions): Future[ActionPerformed] =
-    personController.ask(GeneratePeople(totalPeople, femalePercent, malePercent,_))
+    personController.ask(GeneratePeople(totalPeople, femalePercent, malePercent, _))
 
   def deletePerson(name: String): Future[ActionPerformed] =
     personController.ask(DeletePerson(name, _))
@@ -42,34 +42,15 @@ class PersonRoutes(personController: ActorRef[PersonController.Command])(implici
   //#people-get-post
   //#people-get-delete
 
-
-  val peopleRoutes: Route =
-    pathPrefix("people") {
+  val personRoutes: Route = {
     concat(
-      //#people-get-delete
-      pathEnd {
-        concat(
-          get {
-            complete(getPeople)
-          },
-          post {
-            entity(as[Person]) { person =>
-              onSuccess(createPerson(person)) { performed =>
-                complete((StatusCodes.Created, performed))
-              }
-            }
-          },
-          post {
-            entity(as[GenerationOptions]) { options =>
-              onSuccess(generatePeople(options, options, options)) { performed =>
-                complete((StatusCodes.Created, performed))
-              }
-            }
+      post {
+        entity(as[Person]) { person =>
+          onSuccess(createPerson(person)) { performed =>
+            complete((StatusCodes.Created, performed))
           }
-        )
+        }
       },
-      //#people-get-delete
-      //#people-get-post
       path(Segment) { name =>
         concat(
           get {
@@ -88,9 +69,34 @@ class PersonRoutes(personController: ActorRef[PersonController.Command])(implici
             }
             //#people-delete-logic
           })
-      })
-    //#people-get-delete
+      }
+    )
   }
-  //#all-routes
 
+  val peopleRoutes: Route = {
+    concat(
+      get{
+        complete(getPeople)
+      },
+      post {
+        entity(as[GenerationOptions]) { options =>
+          onSuccess(generatePeople(options, options, options)) { performed =>
+            complete((StatusCodes.Created, performed))
+          }
+        }
+      }
+
+    )
+  }
+
+  val routes: Route = {
+    concat(
+      pathPrefix("api") {
+        concat(
+          pathPrefix("person")(personRoutes),
+          path("people")(peopleRoutes)
+        )
+      }
+    )
+  }
 }

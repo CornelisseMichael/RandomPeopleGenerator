@@ -2,8 +2,6 @@ package utilities
 
 import java.io.IOException
 
-import utilities.PeopleGenerator.getClass
-
 import scala.io.Source
 import scala.util.{Failure, Try}
 

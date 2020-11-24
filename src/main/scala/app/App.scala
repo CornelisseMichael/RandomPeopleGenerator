@@ -35,7 +35,7 @@ object App {
       context.watch(personRegistryActor)
 
       val routes = new PersonRoutes(personRegistryActor)(context.system)
-      startHttpServer(routes.peopleRoutes)(context.system)
+      startHttpServer(routes.routes)(context.system)
 
       Behaviors.empty
     }
