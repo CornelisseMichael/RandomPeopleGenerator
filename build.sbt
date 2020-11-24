@@ -14,7 +14,17 @@ lazy val root = (project in file(".")).
       "com.typesafe.akka" %% "akka-actor-typed"         % akkaVersion,
       "com.typesafe.akka" %% "akka-stream"              % akkaVersion,
       "ch.qos.logback"    % "logback-classic"           % "1.2.3",
-      "org.clapper" %% "grizzled-scala" % "4.9.3",
+      "org.postgresql" % "postgresql" % "42.2.18",
+    //  "org.scalikejdbc" %% "scalikejdbc"       % "3.5.0",
+      "ch.qos.logback" % "logback-classic" % "1.2.3",
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
+      //"org.scalikejdbc" %% "scalikejdbc"       % "3.5.0",
+      //"com.h2database"  %  "h2"                % "1.4.200",
+     // "ch.qos.logback"  %  "logback-classic"   % "1.2.3",
+
+     // "com.lightbend.akka" %% "akka-stream-alpakka-slick" % "2.0.2",
+     // "com.typesafe.slick" %% "slick" % "3.3.2",
+     // "org.postgresql" % "postgresql" % "42.2.18",
 
       "com.typesafe.akka" %% "akka-http-testkit"        % akkaHttpVersion % Test,
       "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion     % Test,

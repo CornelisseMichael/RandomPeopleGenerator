@@ -1,41 +1,12 @@
-package utility
+package utilities
 
 import java.io.IOException
-import java.time.LocalDate
-import java.util.concurrent.ThreadLocalRandom
-
-import grizzled.random.RandomUtil
 import models.Person
 
 import scala.io.Source
 import scala.util.{Failure, Try}
 
-object PeopleGenerator  extends App{
-
-  /**
-   * Generates random birthdate
-   *
-   * @return RandomLocalDate.ToString
-   */
-  private def generateRandomDate(): String = {
-    val start = LocalDate.of(1920, 1, 1)
-    val end = LocalDate.now
-    val startEpochDay = start.toEpochDay
-    val endEpochDay = end.toEpochDay
-    val randomDay = RandomUtil.randomLongBetween(startEpochDay, endEpochDay) //ThreadLocalRandom.current.nextLong(startEpochDay, endEpochDay)
-    LocalDate.ofEpochDay(randomDay).toString
-  }
-
-  /**
-   * Generates random zipcode
-   *
-   * @return Random zipcode as String
-   */
-  private def generateRandomZipcode(): String = {
-    val numbers = RandomUtil.randomIntBetween(1000, 9999)
-    val letters = RandomUtil.randomString(2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-    s"$numbers$letters"
-  }
+object PeopleGenerator {
 
   /**
    * Makes new Person object
@@ -47,11 +18,11 @@ object PeopleGenerator  extends App{
    */
   private def makePerson(lastnames: Array[String], firstnames: Array[String], sex: Char): Person = {
     Person(
-      lastname = RandomUtil.randomChoice(lastnames),
-      firstname = RandomUtil.randomChoice(firstnames),
+      lastname =  Randomizer.randomChoice(lastnames),
+      firstname = Randomizer.randomChoice(firstnames),
       sex = sex,
-      birthdate = generateRandomDate(),
-      zipcode = generateRandomZipcode()
+      birthdate = Randomizer.generateRandomDate(),
+      zipcode = Randomizer.generateRandomZipcode()
     )
   }
 
@@ -74,9 +45,9 @@ object PeopleGenerator  extends App{
            lastNames,
            femaleFirstNames,
            maleFirstNames,
-           totalPeople,//.totalPeople,
-           femalePercent,//.femalePercent,
-           malePercent//.malePercent
+           totalPeople,
+           femalePercent,
+           malePercent
          )}
       yield people
   }

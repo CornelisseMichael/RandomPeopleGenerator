@@ -5,7 +5,7 @@ package app
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, Behavior}
 import models.{GenerationOptions, People, Person}
-import utility.PeopleGenerator
+import utilities.PeopleGenerator
 
 object PersonController {
 

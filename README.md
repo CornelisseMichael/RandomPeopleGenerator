@@ -12,8 +12,3 @@ Use following technologies:
  - akka-http
 
 ## External libraries used
-
-```
-grizzled-scala
-```
-
