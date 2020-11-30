@@ -1,15 +1,14 @@
-package old.com.example
+package com.example
 
 //#user-routes-spec
 //#test-top
-/*
 import akka.actor.testkit.typed.scaladsl.ActorTestKit
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ Matchers, WordSpec }
-
+/*
 //#set-up
 class UserRoutesSpec extends WordSpec with Matchers with ScalaFutures with ScalatestRouteTest {
   //#test-top
@@ -90,8 +89,7 @@ class UserRoutesSpec extends WordSpec with Matchers with ScalaFutures with Scala
   //#actual-test
 
   //#set-up
-}
+  }
+ */
 //#set-up
 //#user-routes-spec
-
- */

@@ -1,11 +1,15 @@
-package utilities
+package core
 
-import models.Person
+import java.time.LocalDate
+import java.util.concurrent.ThreadLocalRandom
 
-import scala.util.{Failure, Try}
+import models._
+import core.Randomizer.randomString
+
+import scala.util.{Failure, Random, Try}
 
 object PeopleGenerator {
-
+  var count = 0
   /**
    * Makes new Person object
    *
@@ -14,27 +18,22 @@ object PeopleGenerator {
    * @param sex        Persons gender
    * @return new Person
    */
-  private def makePerson(lastnames: Array[String], firstnames: Array[String], sex: Char): Person = {
+  private def makePerson(lastnames: Array[String], firstnames: Array[String],
+                         sex: Char, from: Int, to: Int): Person = {
+    count = incrementId()
     Person(
+      id = Option(count),
       lastname =  Randomizer.randomChoice(lastnames),
       firstname = Randomizer.randomChoice(firstnames),
       sex = sex,
-      birthdate = Randomizer.generateRandomDate(),
-      zipcode = Randomizer.generateRandomZipcode()
+      birthdate = generateRandomDate(from, to),
+      zipcode = generateRandomZipcode()
     )
   }
 
-  /**
-   * Generates random people
-   *
-   * @param totalPeople   total amount of people that need to be generated
-   * @param femalePercent female percentage of the generated people
-   * @param malePercent   male percentage of the generated people
-   * @return LazyList of randomly generated people
-   */
-  def generatePeople(totalPeople: Int,
-                     femalePercent: Int,
-                     malePercent: Int): Try[LazyList[Person]] = {
+  def incrementId() = count + 1
+
+  def generatePeople(generationOptions: GenerationOptions): Try[LazyList[Person]] = {
 
     for {lastNames <- FileReader.readFile("/names/last_names.txt")
          maleFirstNames <- FileReader.readFile("/names/male_first_names.txt")
@@ -43,9 +42,11 @@ object PeopleGenerator {
            lastNames,
            femaleFirstNames,
            maleFirstNames,
-           totalPeople,
-           femalePercent,
-           malePercent
+           generationOptions.totalPeople,
+           generationOptions.femalePercent,
+           generationOptions.malePercent,
+           generationOptions.from,
+           generationOptions.to
          )}
       yield people
   }
@@ -65,7 +66,9 @@ object PeopleGenerator {
                                    maleFirstNames: Array[String],
                                    totalPeople: Int,
                                    femalePercent: Int,
-                                   malePercent: Int
+                                   malePercent: Int,
+                                   from: Int,
+                                   to: Int
                                   ):
   Try[LazyList[Person]] = {
 
@@ -77,11 +80,11 @@ object PeopleGenerator {
      */
     def generate(malesLeft: Int, femalesLeft: Int): LazyList[Person] = {
       if (femalesLeft > 0) {
-        makePerson(lastNames, femaleFirstNames, 'F') #::
+        makePerson(lastNames, femaleFirstNames, 'F', from, to) #::
           generate(malesLeft, femalesLeft - 1)
       }
       else if (malesLeft > 0) {
-        makePerson(lastNames,maleFirstNames, 'M') #::
+        makePerson(lastNames,maleFirstNames, 'M', from , to) #::
           generate(malesLeft - 1, femalesLeft)
       }
       else
@@ -95,5 +98,32 @@ object PeopleGenerator {
     Try {
       generate(totalMales, totalFemales)
     }
+  }
+
+  /**
+   * Generates random birthdate
+   *
+   * @return RandomLocalDate.ToString
+   */
+  private def generateRandomDate(from: Int, to: Int): String = {
+    //val start = LocalDate.of(1920, 1, 1)
+    val start = LocalDate.of(from, 1, 1)
+    //val end = LocalDate.now
+    val end = LocalDate.of(to, 1, 1)
+    val startEpochDay = start.toEpochDay
+    val endEpochDay = end.toEpochDay
+    val randomDay = ThreadLocalRandom.current.nextLong(startEpochDay, endEpochDay)
+    LocalDate.ofEpochDay(randomDay).toString
+  }
+
+  /**
+   * Generates random zipcode
+   *
+   * @return Random zipcode as String
+   */
+  private def generateRandomZipcode(): String = {
+    val numbers = Random.between(1000, 9999)
+    val letters = randomString(2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    s"$numbers$letters"
   }
 }

@@ -1,9 +1,12 @@
 package models
 
+import java.time.LocalDate
+
 final case class Person(
-                   lastname: String,
-                   firstname: String,
-                   sex: Char,
-                   birthdate: String,
-                   zipcode: String,
-                 )
+                         id: Option[Int],
+                         lastname: String,
+                         firstname: String,
+                         sex: Char,
+                         birthdate: String,
+                         zipcode: String,
+                       )
