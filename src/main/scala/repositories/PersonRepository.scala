@@ -1,6 +1,6 @@
 package repositories
 
-import models.{PersonTable, Person}
+import models.{Person, PersonTable}
 
 import scala.concurrent.Future
 import slick.jdbc.PostgresProfile.api._
@@ -8,6 +8,7 @@ import slick.jdbc.PostgresProfile.api._
 object PersonRepository extends BaseRepository {
 
   /**
+   * Returns all people from the database
    *
    * @return All people in the database
    */
@@ -16,6 +17,7 @@ object PersonRepository extends BaseRepository {
   }
 
   /**
+   * Returns person with specific id from the database
    *
    * @param id of the user you want to retrieve
    * @return returns the user with specific id
@@ -25,15 +27,17 @@ object PersonRepository extends BaseRepository {
   }
 
   /**
+   * Returns all people with the specified gender from the database
    *
    * @param sex of the people you rant to retrieve
    * @return all the users of the specified sex
    */
-  def findAllFromGender(sex: Char): Future[Seq[Person]] = {
+  def findAllFromGender(sex: String): Future[Seq[Person]] = {
     peopleTable.filter(_.sex === sex).result
   }
 
   /**
+   * Returns all people from a specific birthYear from the database
    *
    * @param year the birth year of the people you want to retrieve
    * @return all the users of the specified birth year
@@ -42,26 +46,61 @@ object PersonRepository extends BaseRepository {
     peopleTable.filter(_.birthdate.substring(0, 4) === year).result
   }
 
+  /**
+   * Returns all people between given id start and end range, optionally you can provide sex 'F' or 'M',
+   * in the params to only get the results for the specified gender
+   *
+   * @param start Id to start from
+   * @param end   Id to end at
+   * @param sex   Optionally provide the gender you want to search for
+   * @return all the queried people
+   */
+  def findAllBetweenIdRangeAndGender(start: Int, `end`: Int, sex: Option[String]): Future[Seq[Person]] = {
 
-  def findAllBetweenRange(from: String, to: String): Future[Seq[Person]] = {
-    val fromId = Option(1)
-    val toId = Option(3)
-    peopleTable.filterOpt(fromId)(_.id > _)
-      .filterOpt(toId)(_.id<_).result
-
+    if (sex.isDefined) {
+      peopleTable.filter(
+        people =>
+          people.sex === sex
+            && people.id >= start
+            && people.id <= `end`)
+        .sortBy(_.id.asc).result
+    } else {
+      peopleTable.filter(people =>
+        people.id >= start
+          && people.id <= `end`)
+        .sortBy(_.id.asc).result
+    }
   }
-
-
-  def findAllBetweenYearRange(from: String, to: String): Future[Seq[Person]] = {
-    val fromYear = Option(from)
-    val toYear = Option(to)
-    peopleTable.filterOpt(fromYear)(_.birthdate.substring(0, 4) > _)
-      .filterOpt(toYear)(_.birthdate.substring(0, 4) < _).result
-  }
-
-  //def findAllFromYearBetweenRange(from: String, to:String): Future[Seq[Person]] = peopleTable.filter(_.birthdate.substring(0, 4) >= from).filter(_.birthdate.substring(0, 4) <= to).result//peopleTable.filter(_.birthdate.substring(0, 4) > from).result
 
   /**
+   * Returns all people from and to between given birth years , optionally you can provide sex 'F' or 'M',
+   * in the params to only get the results for the specified gender
+   *
+   * @param from birth year
+   * @param to   birth year
+   * @param sex  Optionally provide the gender you want to search for
+   * @return all the queried people
+   */
+  def findAllBetweenYearRangeAndGender(from: String, to: String, sex: Option[String]): Future[Seq[Person]] = {
+    if (sex.isDefined) {
+      peopleTable.filter(
+        people =>
+          people.sex === sex
+            && people.birthdate.substring(0, 4) >= from
+            && people.birthdate.substring(0, 4) <= to)
+        .sortBy(_.birthdate.asc).result
+    } else {
+      peopleTable.filter(
+        people =>
+          people.birthdate.substring(0, 4) >= from
+            && people.birthdate.substring(0, 4) <= to)
+        .sortBy(_.birthdate.asc).result
+    }
+
+  }
+
+  /**
+   * Creates an individual person entry in the database
    *
    * @param person creates a person based on specific parameters
    * @return the newly created person
@@ -71,15 +110,35 @@ object PersonRepository extends BaseRepository {
   }
 
   /**
+   * Inserts batch of randomly generated people into the database
    *
-   * @param p the batch of people we want to create
+   * @param people the batch of people we want to create
    * @return the batch of newly created people
    */
-  def createPeople(p: Iterable[PersonTable#TableElementType]): Future[Option[Int]] = {
-    peopleTable ++= p
+  def createPeople(people: Iterable[PersonTable#TableElementType]): Future[Option[Int]] = {
+    peopleTable ++= people
+  }
+
+
+  /**
+   * Returns a random batch from the database optionally a gender could be provided so get a batch for a specific gender
+   *
+   * @param amount batch size
+   * @param sex    Optionally provide the gender you want to search for
+   * @return batch of random people
+   */
+  def getRandomBatch(amount: Int, sex: Option[String]): Future[Seq[Person]] = {
+    val rand = SimpleFunction.nullary[Int]("random")
+
+    if (sex.isDefined) {
+      peopleTable.sortBy(_ => rand).filter(_.sex === sex).take(amount).result
+    } else {
+      peopleTable.sortBy(_ => rand).take(amount).result
+    }
   }
 
   /**
+   * Updates an existing person in the database
    *
    * @param newPerson Updated person we want to insert for existing record
    * @param id        the id of the person we want to update
@@ -89,19 +148,19 @@ object PersonRepository extends BaseRepository {
     peopleTable.filter(_.id === id)
       .map(person =>
         (
-        person.lastname,
-        person.firstname,
-        person.sex,
-        person.birthdate,
-        person.zipcode
-      ))
-      .update((
-          newPerson.lastname,
-          newPerson.firstname,
-          newPerson.sex,
-          newPerson.birthdate,
-          newPerson.zipcode
+          person.lastname,
+          person.firstname,
+          person.sex,
+          person.birthdate,
+          person.zipcode
         ))
+      .update((
+        newPerson.lastname,
+        newPerson.firstname,
+        newPerson.sex,
+        newPerson.birthdate,
+        newPerson.zipcode
+      ))
   }
 
   /**
@@ -115,6 +174,7 @@ object PersonRepository extends BaseRepository {
 
   /**
    * Deletes all users from the table
+   *
    * @return deleted list of people
    */
   def deleteAll(): Future[Int] = {

@@ -7,7 +7,7 @@ lazy val root = (project in file(".")).
       organization    := "com.example",
       scalaVersion    := "2.13.3"
     )),
-    name := "peoplegenerator",
+    name := "RandomPeopleGenerator",
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-http"                % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json"     % akkaHttpVersion,
@@ -17,7 +17,6 @@ lazy val root = (project in file(".")).
       "com.typesafe.slick" %% "slick" % "3.3.3",
       "org.postgresql" % "postgresql" % "42.2.18",
       "org.flywaydb" % "flyway-core" % "7.3.0",
-     // "com.typesafe.slick" %% "slick-hikaricp" % "3.3.3",
       "com.typesafe.akka" %% "akka-http-testkit"        % akkaHttpVersion % Test,
       "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion     % Test,
       "org.scalatest"     %% "scalatest"                % "3.0.8"         % Test

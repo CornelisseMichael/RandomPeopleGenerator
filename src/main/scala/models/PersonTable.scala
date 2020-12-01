@@ -2,11 +2,15 @@ package models
 
 import slick.jdbc.PostgresProfile.api._
 
-class PersonTable(tag: Tag)extends Table[Person](tag, "people") {
+/**
+ * Table retains collection of people
+ * @param tag table name
+ */
+class PersonTable(tag: Tag)extends Table[Person](tag, "person") {
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
   def lastname = column[String]("lastname")
   def firstname = column[String]("firstname")
-  def sex = column[Char]("sex")
+  def sex = column[String]("sex")
   def birthdate = column[String]("birthdate")
   def zipcode = column[String]("zipcode")
   def * =

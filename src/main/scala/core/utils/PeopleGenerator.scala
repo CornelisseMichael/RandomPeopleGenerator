@@ -1,15 +1,15 @@
-package core
+package core.utils
 
 import java.time.LocalDate
 import java.util.concurrent.ThreadLocalRandom
 
-import models._
-import core.Randomizer.randomString
+import Randomizer.randomString
+import models.{GenerationOptions, Person}
 
-import scala.util.{Failure, Random, Try}
+import scala.util.{Random, Try}
 
 object PeopleGenerator {
-  var count = 0
+
   /**
    * Makes new Person object
    *
@@ -19,11 +19,10 @@ object PeopleGenerator {
    * @return new Person
    */
   private def makePerson(lastnames: Array[String], firstnames: Array[String],
-                         sex: Char, from: Int, to: Int): Person = {
-    count = incrementId()
+                         sex: String, from: Int, to: Int): Person = {
     Person(
-      id = Option(count),
-      lastname =  Randomizer.randomChoice(lastnames),
+      id = None,
+      lastname = Randomizer.randomChoice(lastnames),
       firstname = Randomizer.randomChoice(firstnames),
       sex = sex,
       birthdate = generateRandomDate(from, to),
@@ -31,8 +30,13 @@ object PeopleGenerator {
     )
   }
 
-  def incrementId() = count + 1
 
+  /**
+   * Yields LazyList of randomly generated people
+   *
+   * @param generationOptions number of people, female percentage, male percentage, from and to year
+   * @return
+   */
   def generatePeople(generationOptions: GenerationOptions): Try[LazyList[Person]] = {
 
     for {lastNames <- FileReader.readFile("/names/last_names.txt")
@@ -52,6 +56,7 @@ object PeopleGenerator {
   }
 
   /**
+   * Creates stream of randomly generated people
    *
    * @param lastNames        Array of lastNames
    * @param femaleFirstNames Array of femaleFirstnames
@@ -73,6 +78,7 @@ object PeopleGenerator {
   Try[LazyList[Person]] = {
 
     /**
+     * Divides the percentage of female and male people
      *
      * @param malesLeft   amount of males that are left to be generated
      * @param femalesLeft amount of females left to be generated
@@ -80,11 +86,11 @@ object PeopleGenerator {
      */
     def generate(malesLeft: Int, femalesLeft: Int): LazyList[Person] = {
       if (femalesLeft > 0) {
-        makePerson(lastNames, femaleFirstNames, 'F', from, to) #::
+        makePerson(lastNames, femaleFirstNames, "F", from, to) #::
           generate(malesLeft, femalesLeft - 1)
       }
       else if (malesLeft > 0) {
-        makePerson(lastNames,maleFirstNames, 'M', from , to) #::
+        makePerson(lastNames, maleFirstNames, "M", from, to) #::
           generate(malesLeft - 1, femalesLeft)
       }
       else
@@ -101,15 +107,21 @@ object PeopleGenerator {
   }
 
   /**
-   * Generates random birthdate
+   * Generates random date
    *
    * @return RandomLocalDate.ToString
    */
   private def generateRandomDate(from: Int, to: Int): String = {
-    //val start = LocalDate.of(1920, 1, 1)
-    val start = LocalDate.of(from, 1, 1)
-    //val end = LocalDate.now
-    val end = LocalDate.of(to, 1, 1)
+
+    // Sanity check to make sure user doesn't input start year that exceeds end year
+    // If so revert to some generic date
+    val start = if (from < to) LocalDate.of(from, 1, 1)
+    else LocalDate.of(1920, 1, 1)
+
+    // Sanity check to make sure user doesn't input to year that precedes start year
+    // If so revert back to LocalDate.now
+    val end = if (to > from) LocalDate.of(to, 2, 1) else LocalDate.now
+
     val startEpochDay = start.toEpochDay
     val endEpochDay = end.toEpochDay
     val randomDay = ThreadLocalRandom.current.nextLong(startEpochDay, endEpochDay)

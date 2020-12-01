@@ -1,4 +1,5 @@
-package core
+package core.utils
+
 import java.io.IOException
 
 import scala.io.Source
