@@ -254,10 +254,13 @@ If we would then do a get request this would be the output in postman:
 
 *Delete:*
 
+Deletes all people currently in the database
+
 ```
 http://localhost:8080/api/people
 ```
 
+Should return status: 200 OK
 
 
 ### Search routes:
