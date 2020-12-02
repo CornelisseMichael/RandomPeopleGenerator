@@ -5,7 +5,6 @@ import slick.jdbc.PostgresProfile.api._
 /**
  * Starts database session
  */
-
 trait DbConfig extends Config {
 
   val db = Database.forURL(
