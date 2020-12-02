@@ -15,19 +15,13 @@ trait PeopleRoutes extends JsonProtocols {
 
   val peopleRoutes: Route = {
     concat(
-      /**
-       * Posts batch of newly created people to the database
-       */
       post {
         entity(as[GenerationOptions]) { options =>
-          onSuccess(PersonRepository.createPeople(PeopleGenerator.generatePeople(options).get).map(_.toJson)) { performed =>
+          onSuccess(PersonRepository.createPeople(PeopleGenerator.generatePeople(options).get).map(_.toJson))
+          { performed =>
             complete((StatusCodes.Created, performed))
           }
         }
-
-        /**
-         * Returns all people not advised when you have many records
-         */
       } ~ get {
         complete(PersonRepository.findAll.map(_.toJson))
       } ~ delete {

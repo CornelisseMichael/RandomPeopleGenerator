@@ -9,7 +9,6 @@ import core.config.{Config, MigrationConfig}
 
 import scala.util.{Failure, Success}
 
-
 /**
  * Main class of the application that start the server
  */

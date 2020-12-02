@@ -11,13 +11,13 @@ object Randomizer {
    * @param chars  Characters to use in the String
    * @return Randomly generated String
    */
-  def randomString(length: Int,
-                   chars: String): String = {
+  def randomString(length: Int, chars: String): String = {
     require(chars.length > 0)
-    if (chars.length == 1)
+    if (chars.length == 1) {
       chars.take(1) * length
-    else
+    } else {
       (1 to length).map { _ => randomChoice(chars) }.mkString
+    }
   }
 
   /**
@@ -27,7 +27,9 @@ object Randomizer {
    * @tparam T generic type
    * @return Random choice from String sequence
    */
-  def randomChoice[T](seq: IndexedSeq[T]): T = seq(Random.nextInt(seq.length))
+  def randomChoice[T](seq: IndexedSeq[T]): T = {
+    seq(Random.nextInt(seq.length))
+  }
 
   /**
    * Returns random choice from input array
@@ -36,5 +38,8 @@ object Randomizer {
    * @tparam T generic type
    * @return Random choice from array
    */
-  def randomChoice[T](a: Array[T]): T = a(Random.nextInt(a.length))
+  def randomChoice[T](a: Array[T]): T = {
+    a(Random.nextInt(a.length))
+  }
+
 }

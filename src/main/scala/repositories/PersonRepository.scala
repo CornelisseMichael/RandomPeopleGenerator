@@ -119,7 +119,6 @@ object PersonRepository extends BaseRepository {
     peopleTable ++= people
   }
 
-
   /**
    * Returns a random batch from the database optionally a gender could be provided so get a batch for a specific gender
    *

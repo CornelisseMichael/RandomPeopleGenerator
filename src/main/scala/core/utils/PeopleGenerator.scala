@@ -30,7 +30,6 @@ object PeopleGenerator {
     )
   }
 
-
   /**
    * Yields LazyList of randomly generated people
    *

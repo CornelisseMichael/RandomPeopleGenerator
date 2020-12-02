@@ -20,15 +20,15 @@ trait PersonRoutes extends JsonProtocols {
             complete((StatusCodes.Created, performed))
           }
         }
-      } ~ parameter("id") { id =>
+      } ~ parameter("id".as[Int]) { id =>
         concat(
           delete {
-            onSuccess(PersonRepository.delete(id.toInt).map(_.toJson)) { performed =>
+            onSuccess(PersonRepository.delete(id).map(_.toJson)) { performed =>
               complete((s"Person with $id deleted", performed))
             }
           } ~ put(
             entity(as[Person]) { person => {
-              onSuccess(PersonRepository.update(person, id.toInt).map(_.toJson)) { performed =>
+              onSuccess(PersonRepository.update(person, id).map(_.toJson)) { performed =>
                 complete((s"Person with $id updated", performed))
               }
             }
